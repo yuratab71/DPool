@@ -1,5 +1,7 @@
 #include "munit/munit.h"
 #include "pool.h"
+#include <assert.h>
+#include <stdlib.h>
 
 #define TEST_POOL_SIZE 128
 
@@ -10,9 +12,13 @@ typedef struct {
   short short_val;
 } TestStruct;
 
-static MunitResult init_and_free(const MunitParameter params[], void *data) {
+static MunitResult init_and_free(const MunitParameter params[],
+                                 void *user_data) {
+  assert(params == NULL);
+  assert(user_data != NULL);
+
   DPool pool;
-  dpool_init_pool(&pool, 128, sizeof(TestStruct));
+  dpool_init_pool(&pool, 4, sizeof(TestStruct));
 
   munit_assert_ptr_not_null(pool.memory);
   dpool_free_pool(&pool);
@@ -21,9 +27,12 @@ static MunitResult init_and_free(const MunitParameter params[], void *data) {
 }
 
 static MunitResult allocate_and_free(const MunitParameter params[],
-                                     void *data) {
+                                     void *user_data) {
+  assert(params == NULL);
+  assert(user_data != NULL);
+
   DPool pool;
-  dpool_init_pool(&pool, 128, sizeof(TestStruct));
+  dpool_init_pool(&pool, 4, sizeof(TestStruct));
 
   TestStruct *d1 = dpool_alloc(&pool);
   TestStruct *d2 = dpool_alloc(&pool);
@@ -41,7 +50,10 @@ static MunitResult allocate_and_free(const MunitParameter params[],
 }
 
 static MunitResult allocate_more_than_size(const MunitParameter params[],
-                                           void *data) {
+                                           void *user_data) {
+  assert(params == NULL);
+  assert(user_data != NULL);
+
   DPool pool;
   dpool_init_pool(&pool, 4, sizeof(TestStruct));
 
@@ -64,10 +76,40 @@ static MunitResult allocate_more_than_size(const MunitParameter params[],
   return MUNIT_OK;
 }
 
-static MunitResult allocate_and_compare(const MunitParameter params[],
-                                        void *data) {
+static MunitResult allocate_free_and_allocate(const MunitParameter params[],
+                                              void *user_data) {
+  assert(params == NULL);
+  assert(user_data != NULL);
+
   DPool pool;
-  dpool_init_pool(&pool, 128, sizeof(TestStruct));
+  dpool_init_pool(&pool, 4, sizeof(TestStruct));
+
+  TestStruct *d1 = dpool_alloc(&pool);
+  TestStruct *d2 = dpool_alloc(&pool);
+  TestStruct *d3 = dpool_alloc(&pool);
+  TestStruct *d4 = dpool_alloc(&pool);
+
+  dpool_free(&pool, d1);
+  dpool_free(&pool, d2);
+  dpool_free(&pool, d3);
+  dpool_free(&pool, d4);
+
+  TestStruct *d5 = dpool_alloc(&pool);
+
+  munit_assert_ptr_not_null(d5);
+
+  dpool_free_pool(&pool);
+
+  return MUNIT_OK;
+}
+
+static MunitResult allocate_and_compare(const MunitParameter params[],
+                                        void *user_data) {
+  assert(params == NULL);
+  assert(user_data != NULL);
+
+  DPool pool;
+  dpool_init_pool(&pool, 4, sizeof(TestStruct));
 
   TestStruct *d1 = dpool_alloc(&pool);
   TestStruct *d2 = dpool_alloc(&pool);
@@ -95,33 +137,35 @@ static MunitResult allocate_and_compare(const MunitParameter params[],
   return MUNIT_OK;
 }
 
-MunitTest tests[] = {{"Init Pool and free", init_and_free, NULL, NULL,
-                      MUNIT_TEST_OPTION_NONE, NULL},
-                     {
-                         "Allocate and free the pointers",
-                         allocate_and_free,
-                         NULL,
-                         NULL,
-                         MUNIT_TEST_OPTION_NONE,
-                         NULL,
-                     },
-                     {
-                         "Allocate more than size",
-                         allocate_more_than_size,
-                         NULL,
-                         NULL,
-                         MUNIT_TEST_OPTION_NONE,
-                         NULL,
-                     },
-                     {"Allocate and compare the pointers", allocate_and_compare,
-                      NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
-
-                     {NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL}};
+MunitTest tests[] = {
+    {(char *)"dpool/init_and_free", init_and_free, NULL, NULL,
+     MUNIT_TEST_OPTION_NONE, NULL},
+    {
+        (char *)"dpool/allocate_and_free",
+        allocate_and_free,
+        NULL,
+        NULL,
+        MUNIT_TEST_OPTION_NONE,
+        NULL,
+    },
+    {
+        (char *)"dpool/allocate_more_than_size",
+        allocate_more_than_size,
+        NULL,
+        NULL,
+        MUNIT_TEST_OPTION_NONE,
+        NULL,
+    },
+    {(char *)"dpool/allocate_and_compare", allocate_and_compare, NULL, NULL,
+     MUNIT_TEST_OPTION_NONE, NULL},
+    {(char *)"dpool/allocate_free_and_allocate", allocate_free_and_allocate,
+     NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL}};
 
 static const MunitSuite suite = {
-    "DPool Test Suite", tests, NULL, 1, MUNIT_SUITE_OPTION_NONE,
+    "", tests, NULL, 1, MUNIT_SUITE_OPTION_NONE,
 };
 
 int main(int argc, char *argv[MUNIT_ARRAY_PARAM(argc + 1)]) {
-  return munit_suite_main(&suite, NULL, argc, argv);
+  return munit_suite_main(&suite, (void *)"Dpool", argc, argv);
 }

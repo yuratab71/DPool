@@ -1,3 +1,4 @@
+#include "munit/munit.h"
 #include "pool.h"
 #include <assert.h>
 #include <stdint.h>
