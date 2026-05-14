@@ -11,7 +11,7 @@ Single .c file and .h file
 
 DPool pool;
 
-dpool_init_pool(&pool, 128, sizeof(YourStrcut));
+dpool_init_pool(&pool, 128, sizeof(YourStruct));
 
 YourStruct *data = dpool_alloc(&pool);
 
