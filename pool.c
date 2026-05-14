@@ -5,13 +5,12 @@
 #include <stdlib.h>
 
 void dpool_init_pool(DPool *pool, size_t sz, size_t obj_sz) {
-  pool->size = sz;
-  pool->data_size = obj_sz;
   pool->memory = (uint8_t *)malloc(sz * obj_sz);
 
   pool->free = (DNode *)pool->memory;
-  for (size_t i = 1; i < (sz); i++) {
-    assert((i * obj_sz) < (sz * obj_sz));
+  for (size_t i = 1; i <= sz; i++) {
+    assert((i * obj_sz) <= (sz * obj_sz));
+
     DNode *current = pool->free;
     current->next = (DNode *)(pool->memory + (i * obj_sz));
     pool->free = current->next;
@@ -33,7 +32,7 @@ void dpool_free_pool(DPool *pool) {
   return;
 }
 
-void *new_pool_allocate(DPool *pool) {
+void *dpool_alloc(DPool *pool) {
   assert(pool != NULL);
   assert(pool->free != NULL);
 
@@ -43,10 +42,8 @@ void *new_pool_allocate(DPool *pool) {
   return (void *)node->data;
 }
 
-void new_pool_free(DPool *pool, void *ptr) {
+void dpool_free(DPool *pool, void *ptr) {
   assert((uintptr_t)pool->memory < (uintptr_t)ptr);
-  assert((uintptr_t)ptr <
-         (uintptr_t)pool->memory + pool->size * pool->data_size);
   assert(ptr != pool->free);
 
   DNode *node = (DNode *)ptr;
