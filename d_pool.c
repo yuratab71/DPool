@@ -1,9 +1,9 @@
-#include "munit/munit.h"
-#include "pool.h"
 #include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "d_pool.h"
 
 void dpool_init_pool(DPool *pool, size_t sz, size_t obj_sz) {
   pool->memory = (uint8_t *)malloc(sz * obj_sz);
