@@ -1,0 +1,18 @@
+name: DPool Test Action
+on: [push]
+jobs:
+  Test-And-Build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install build dependecies
+        run: |
+          sudo apt install build-essential
+
+      - name: Run Tests
+        run: make Test
+
