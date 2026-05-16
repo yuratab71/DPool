@@ -36,4 +36,17 @@ void *dpool_alloc(DPool *pool);
  */
 void dpool_free(DPool *pool, void *ptr);
 
+#define DBUMP_DEFAULT_ALIGNMENT 16
+
+typedef struct {
+  void *memory;
+  uintptr_t offset;
+  size_t capacity;
+} DBump;
+
+void dbump_init(DBump *bump, size_t size);
+void *dbump_alloc(DBump *bump, size_t size);
+void dbump_reset(DBump *bump);
+void dbump_free(DBump *bump);
+
 #endif

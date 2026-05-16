@@ -62,3 +62,25 @@ void dpool_free(DPool *pool, void *ptr) {
 
   return;
 }
+
+void dbump_init(DBump *bump, size_t size) {
+  bump->memory = malloc(size);
+  bump->capacity = size;
+  bump->offset = (uintptr_t)((uint8_t *)bump->memory + size);
+}
+
+void *dbump_alloc(DBump *bump, size_t size) {
+
+  bump->offset -= size;
+  bump->offset = bump->offset & ~(DBUMP_DEFAULT_ALIGNMENT - 1);
+  if ((uintptr_t)bump->offset < (uintptr_t)bump->memory) {
+    return NULL;
+  }
+  return (void *)bump->offset;
+}
+
+void dbump_reset(DBump *bump) {
+  bump->offset = (uintptr_t)((uint8_t *)bump->memory + bump->capacity);
+}
+
+void dbump_free(DBump *bump) { free(bump->memory); }

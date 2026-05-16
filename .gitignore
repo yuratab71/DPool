@@ -1,6 +1,5 @@
 /*.dSYM
 /.cache
-d_pool
-d_pooltest
+/dist
 compile_commands.json
 
