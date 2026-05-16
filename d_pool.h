@@ -12,6 +12,7 @@ typedef union {
 typedef struct {
   DNode *free;
   uint8_t *memory;
+  size_t capacity;
 } DPool;
 
 /**
