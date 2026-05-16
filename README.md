@@ -30,13 +30,10 @@ dbump_init(&bump, 128 * 3);
 
 YourStruct *data = dbump_alloc(&pool, sizeof(YourStruct));
 
+// ...
+
 dbump_reset(&bump);
 
 dbump_free(&bump);
 
-// ...
-
-dpool_free(data);
-
-dpool_free_pool(&pool);
 ```
