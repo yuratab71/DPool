@@ -14,5 +14,6 @@ jobs:
           sudo apt install build-essential
 
       - name: Run Tests
+        run: mkdir dist
         run: make Test
 
