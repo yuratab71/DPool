@@ -2,6 +2,12 @@
 #include "munit/munit.h"
 #include <assert.h>
 
+struct DBump {
+  void *memory;
+  uintptr_t offset;
+  size_t capacity;
+};
+
 static MunitResult init_and_free(const MunitParameter params[],
                                  void *user_data) {
   assert(params == NULL);

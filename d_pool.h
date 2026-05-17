@@ -4,16 +4,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-typedef union {
-  void *next;
-  uint8_t *data;
-} DNode;
-
-typedef struct {
-  DNode *free;
-  uint8_t *memory;
-  size_t capacity;
-} DPool;
+typedef struct DPool DPool;
+typedef struct DBump DBump;
 
 /**
  * - Initializes the pool
@@ -38,15 +30,24 @@ void dpool_free(DPool *pool, void *ptr);
 
 #define DBUMP_DEFAULT_ALIGNMENT 16
 
-typedef struct {
-  void *memory;
-  uintptr_t offset;
-  size_t capacity;
-} DBump;
-
+/**
+ * Initializes the bump allocator (arena allocator)
+ */
 void dbump_init(DBump *bump, size_t size);
+/*
+ * Allocates memory from arena
+ * - Uses 16 byte alignment
+ * - allocates downwards
+ */
 void *dbump_alloc(DBump *bump, size_t size);
+/*
+ * Reset arena to start,
+ * memory is not zeroed
+ */
 void dbump_reset(DBump *bump);
+/*
+ * Frees the bump allocator (arena allocator);
+ */
 void dbump_free(DBump *bump);
 
 #endif

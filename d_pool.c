@@ -5,6 +5,25 @@
 
 #include "d_pool.h"
 
+typedef union DNode DNode;
+
+union DNode {
+  void *next;
+  uint8_t *data;
+};
+
+struct DPool {
+  union DNode *free;
+  uint8_t *memory;
+  size_t capacity;
+};
+
+struct DBump {
+  void *memory;
+  uintptr_t offset;
+  size_t capacity;
+};
+
 void dpool_init_pool(DPool *pool, size_t sz, size_t obj_sz) {
   pool->capacity = sz * obj_sz;
   pool->memory = (uint8_t *)malloc(pool->capacity);
