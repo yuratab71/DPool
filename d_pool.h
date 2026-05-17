@@ -6,6 +6,24 @@
 
 typedef struct DPool DPool;
 typedef struct DBump DBump;
+typedef union DNode DNode;
+
+union DNode {
+  void *next;
+  uint8_t *data;
+};
+
+struct DPool {
+  union DNode *free;
+  uint8_t *memory;
+  size_t capacity;
+};
+
+struct DBump {
+  void *memory;
+  uintptr_t offset;
+  size_t capacity;
+};
 
 /**
  * - Initializes the pool

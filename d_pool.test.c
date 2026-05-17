@@ -12,18 +12,6 @@ typedef struct {
   short short_val;
 } TestStruct;
 
-struct DPool {
-  union DNode *free;
-  uint8_t *memory;
-  size_t capacity;
-};
-
-struct DBump {
-  void *memory;
-  uintptr_t offset;
-  size_t capacity;
-};
-
 static MunitResult init_and_free(const MunitParameter params[],
                                  void *user_data) {
   assert(params == NULL);
