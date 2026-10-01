@@ -65,6 +65,7 @@ void dpool_free(DPool *pool, void *ptr) {
 
 void dbump_init(DBump *bump, size_t size) {
   bump->memory = malloc(size);
+  memset(bump->memory, 0, size);
   bump->capacity = size;
   bump->offset = (uintptr_t)((uint8_t *)bump->memory + size);
 }
